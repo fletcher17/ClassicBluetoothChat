@@ -22,5 +22,7 @@ interface BluetoothController {
 
     fun closeConnection()
 
+    fun updatePairedDevice()
+
     fun release()
 }

@@ -6,10 +6,12 @@ import android.bluetooth.BluetoothManager
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,6 +46,8 @@ class MainActivity : ComponentActivity() {
     private val isBluetoothEnabled: Boolean
         get() = bluetoothAdapter?.isEnabled == true
 
+    val viewModel by viewModels<BluetoothViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,7 +81,7 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             BluetoothChatAppTheme {
-                val viewModel = hiltViewModel<BluetoothViewModel>()
+//                val viewModel = hiltViewModel<BluetoothViewModel>()
                 val state by viewModel.state.collectAsState()
 
                 LaunchedEffect(key1 = state.errorMessage) {
@@ -137,5 +141,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.upDatePairedDevice()
+        Log.d("On Resume state", "State")
+    }
+    override fun onStop() {
+        super.onStop()
+        viewModel.onRelease()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.onRelease()
     }
 }

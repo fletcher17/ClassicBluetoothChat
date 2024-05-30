@@ -166,7 +166,6 @@ class AndroidBluetoothController(
             val bluetoothDevice = bluetoothAdapter?.getRemoteDevice(device.address)
             if (bluetoothDevice?.bondState == BluetoothDevice.BOND_NONE) {
                 bluetoothDevice.createBond()
-                return@flow
             }
 
             currentClientSocket = bluetoothDevice
@@ -226,6 +225,9 @@ class AndroidBluetoothController(
         currentServerSocket?.close()
         currentClientSocket = null
         currentServerSocket = null
+    }
+    override fun updatePairedDevice() {
+        updatePairedDevices()
     }
 
     override fun release() {

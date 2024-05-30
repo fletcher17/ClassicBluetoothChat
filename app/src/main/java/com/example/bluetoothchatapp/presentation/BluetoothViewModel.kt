@@ -1,5 +1,6 @@
 package com.example.bluetoothchatapp.presentation
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bluetoothchatapp.domain.chat.BluetoothController
@@ -96,10 +97,19 @@ class BluetoothViewModel @Inject constructor(
         bluetoothController.stopDiscovery()
     }
 
+    fun onRelease() {
+        bluetoothController.release()
+    }
+
+    fun upDatePairedDevice() {
+        bluetoothController.updatePairedDevice()
+    }
+
     private fun Flow<ConnectionResult>.listen(): Job {
         return onEach { result ->
             when(result) {
                 ConnectionResult.ConnectionEstablished -> {
+                    Log.d("general result 1", "$result")
                     _state.update { it.copy(
                         isConnected = true,
                         isConnecting = false,
@@ -107,6 +117,7 @@ class BluetoothViewModel @Inject constructor(
                     ) }
                 }
                 is ConnectionResult.TransferSucceeded -> {
+                    Log.d("general result 2", "$result")
                     _state.update {
                         it.copy(
                             messages = it.messages.plus(result.message)
@@ -114,6 +125,7 @@ class BluetoothViewModel @Inject constructor(
                     }
                 }
                 is ConnectionResult.Error -> {
+                    Log.d("general result 3", "$result")
                     _state.update { it.copy(
                         isConnected = false,
                         isConnecting = false,
@@ -123,6 +135,7 @@ class BluetoothViewModel @Inject constructor(
             }
         }
             .catch { throwable ->
+                Log.d("general result 1", "$throwable")
                 bluetoothController.closeConnection()
                 _state.update { it.copy(
                     isConnected = false,
